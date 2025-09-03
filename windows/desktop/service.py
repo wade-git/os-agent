@@ -64,9 +64,10 @@ class Desktop:
     
     def execute_command(self,command:str)->tuple[str,int]:
         try:
-            result = subprocess.run(['powershell', '-Command']+command.split(), 
-            capture_output=True, check=True)
-            return (result.stdout.decode('latin1'),result.returncode)
+            full_command = f"[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; {command}"
+            result = subprocess.run(['powershell', '-Command', full_command], 
+                capture_output=True, check=True, encoding='utf-8')
+            return (result.stdout, result.returncode)
         except subprocess.CalledProcessError as e:
             return (e.stdout.decode('latin1'),e.returncode)
         
